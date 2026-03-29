@@ -1,29 +1,67 @@
-#!/usr/bin/env python3
-"""pixel_art - ASCII art text renderer."""
-import sys, argparse, json
+import argparse, json
 
-FONT = {"A":["  #  ","# # #","#####","#   #","#   #"],"B":["#### ","#   #","#### ","#   #","#### "],"C":[" ####","#    ","#    ","#    "," ####"],"D":["#### ","#   #","#   #","#   #","#### "],"E":["#####","#    ","###  ","#    ","#####"],"F":["#####","#    ","###  ","#    ","#    "],"G":[" ####","#    ","# ###","#   #"," ####"],"H":["#   #","#   #","#####","#   #","#   #"],"I":["#####","  #  ","  #  ","  #  ","#####"],"L":["#    ","#    ","#    ","#    ","#####"],"M":["#   #","## ##","# # #","#   #","#   #"],"N":["#   #","##  #","# # #","#  ##","#   #"],"O":[" ### ","#   #","#   #","#   #"," ### "],"P":["#### ","#   #","#### ","#    ","#    "],"R":["#### ","#   #","#### ","# #  ","#  ##"],"S":[" ####","#    "," ### ","    #","#### "],"T":["#####","  #  ","  #  ","  #  ","  #  "],"U":["#   #","#   #","#   #","#   #"," ### "],"W":["#   #","#   #","# # #","## ##","#   #"],"X":["#   #"," # # ","  #  "," # # ","#   #"],"Y":["#   #"," # # ","  #  ","  #  ","  #  "],"Z":["#####","   # ","  #  "," #   ","#####"]," ":["     ","     ","     ","     ","     "]}
+PALETTE = {
+    "0": " ", "1": "░", "2": "▒", "3": "▓", "4": "█",
+    "r": "\033[31m█\033[0m", "g": "\033[32m█\033[0m",
+    "b": "\033[34m█\033[0m", "y": "\033[33m█\033[0m",
+    "c": "\033[36m█\033[0m", "m": "\033[35m█\033[0m",
+    "w": "\033[37m█\033[0m",
+}
 
-def render(text, char="#", space=" "):
-    text = text.upper()
-    lines = [""] * 5
-    for ch in text:
-        glyph = FONT.get(ch, FONT.get(" "))
-        for i in range(5):
-            lines[i] += glyph[i].replace("#", char).replace(" ", space) + space
-    return "
-".join(lines)
+def render(data, scale=1):
+    for row in data:
+        line = ""
+        for pixel in row:
+            char = PALETTE.get(str(pixel), str(pixel))
+            line += char * scale
+        for _ in range(scale):
+            print(line)
+
+def make_sprite(name):
+    sprites = {
+        "heart": [
+            "0rr0rr0",
+            "rrrrrrr",
+            "rrrrrrr",
+            "0rrrrr0",
+            "00rrr00",
+            "000r000",
+        ],
+        "smiley": [
+            "0yyyy0",
+            "y0yy0y",
+            "yyyyyy",
+            "y0000y",
+            "yy00yy",
+            "0yyyy0",
+        ],
+        "mushroom": [
+            "00rrr00",
+            "0rrrrr0",
+            "rr4rr4r",
+            "rrrrrrr",
+            "0w4w4w0",
+            "00www00",
+            "00www00",
+        ],
+    }
+    return sprites.get(name, sprites["heart"])
 
 def main():
-    p = argparse.ArgumentParser(description="ASCII art text")
-    p.add_argument("text")
-    p.add_argument("--char", default="#")
-    p.add_argument("--json", action="store_true")
+    p = argparse.ArgumentParser(description="Pixel art renderer")
+    p.add_argument("--sprite", choices=["heart", "smiley", "mushroom"], default="heart")
+    p.add_argument("--scale", type=int, default=2)
+    p.add_argument("--file", help="JSON pixel data file")
+    p.add_argument("--list-palette", action="store_true")
     args = p.parse_args()
-    art = render(args.text, args.char)
-    if args.json:
-        print(json.dumps({"text": args.text, "width": len(art.splitlines()[0]), "height": 5, "art": art}))
+    if args.list_palette:
+        for k, v in PALETTE.items(): print(f"  {k} -> {v}")
+        return
+    if args.file:
+        data = json.load(open(args.file))
     else:
-        print(art)
+        data = make_sprite(args.sprite)
+    render(data, args.scale)
 
-if __name__ == "__main__": main()
+if __name__ == "__main__":
+    main()
