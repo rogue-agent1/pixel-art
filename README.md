@@ -1,9 +1,17 @@
-# pixel-art
+# pixel_art
 
-Pixel art editor and renderer (terminal). Zero-dependency, single-file Python CLI.
+Pixel art generator (PPM format, no dependencies)
+
+Single-file, zero-dependency Python CLI tool.
 
 ## Usage
 
 ```bash
-python3 pixel_art.py --help
+python pixel_art.py --help
+```
+
+## Test
+
+```bash
+python -c "import pixel_art; pixel_art.test()"
 ```
