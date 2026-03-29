@@ -1,17 +1,9 @@
-# pixel_art
+# pixel-art
 
-Pixel art generator (PPM format, no dependencies)
-
-Single-file, zero-dependency Python CLI tool.
+Pixel art generator (PPM format). Zero dependencies, single file, Python 3.8+.
 
 ## Usage
 
 ```bash
-python pixel_art.py --help
-```
-
-## Test
-
-```bash
-python -c "import pixel_art; pixel_art.test()"
+python3 pixel_art.py --help
 ```
